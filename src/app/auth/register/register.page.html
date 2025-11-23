@@ -1,0 +1,171 @@
+<ion-content [fullscreen]="true" class="register-content">
+  <!-- Back Button -->
+  <ion-button 
+    fill="clear" 
+    class="back-button"
+    routerLink="/auth/login"
+  >
+    <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+  </ion-button>
+
+  <div class="register-container">
+    <!-- Logo and Brand -->
+    <div class="brand-section">
+      <ion-avatar class="logo-circle">
+        <ion-icon name="newspaper-outline"></ion-icon>
+      </ion-avatar>
+      <ion-text>
+        <h1 class="brand-title">Komunidad</h1>
+      </ion-text>
+      <ion-text color="light">
+        <p class="brand-subtitle">STAY CONNECTED</p>
+      </ion-text>
+    </div>
+
+    <!-- Register Card -->
+    <ion-card class="register-card">
+      <ion-card-header class="ion-text-center">
+        <ion-card-title class="welcome-title">Create Account</ion-card-title>
+        <ion-card-subtitle class="welcome-subtitle">Sign up to get started</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form (ngSubmit)="onRegister()">
+          <div class="input-wrapper">
+            <ion-label class="input-label">EMAIL</ion-label>
+            <ion-input 
+              type="email" 
+              [(ngModel)]="email" 
+              name="email" 
+              placeholder="Enter your email"
+              required
+              [disabled]="isLoading"
+              class="custom-input"
+              fill="outline"
+            ></ion-input>
+          </div>
+
+          <div class="input-wrapper password-wrapper">
+            <ion-label class="input-label">PASSWORD</ion-label>
+            <div class="input-with-icon">
+              <ion-input 
+                [type]="showPassword ? 'text' : 'password'" 
+                [(ngModel)]="password" 
+                name="password"
+                placeholder="Enter your password"
+                required
+                [disabled]="isLoading"
+                class="custom-input"
+                fill="outline"
+              ></ion-input>
+              <ion-button 
+                fill="clear" 
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [disabled]="isLoading"
+              >
+                <ion-icon 
+                  slot="icon-only" 
+                  [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+                ></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <div class="input-wrapper password-wrapper">
+            <ion-label class="input-label">CONFIRM PASSWORD</ion-label>
+            <div class="input-with-icon">
+              <ion-input 
+                [type]="showConfirmPassword ? 'text' : 'password'" 
+                [(ngModel)]="confirmPassword" 
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                required
+                [disabled]="isLoading"
+                class="custom-input"
+                fill="outline"
+              ></ion-input>
+              <ion-button 
+                fill="clear" 
+                class="password-toggle"
+                (click)="toggleConfirmPasswordVisibility()"
+                [disabled]="isLoading"
+              >
+                <ion-icon 
+                  slot="icon-only" 
+                  [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+                ></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <div class="input-wrapper">
+            <ion-label class="input-label">BARANGAY</ion-label>
+            <ion-select 
+              [(ngModel)]="barangayId" 
+              name="barangayId"
+              placeholder="Select your barangay"
+              [disabled]="isLoading || isLoadingBarangays"
+              class="custom-select"
+              interface="popover"
+            >
+              @if (isLoadingBarangays) {
+                <ion-select-option value="">Loading barangays...</ion-select-option>
+              } @else {
+                @for (barangay of barangays; track barangay.id) {
+                  <ion-select-option [value]="barangay.id">
+                    {{ barangay.name }}
+                  </ion-select-option>
+                }
+              }
+            </ion-select>
+          </div>
+
+          <div class="input-wrapper">
+            <ion-label class="input-label">ROLE</ion-label>
+            <ion-radio-group [(ngModel)]="role" name="role" class="role-radio-group">
+              <ion-radio value="resident" [disabled]="isLoading" labelPlacement="end">Resident</ion-radio>
+              <ion-radio value="official" [disabled]="isLoading" labelPlacement="end">Barangay Official</ion-radio>
+            </ion-radio-group>
+          </div>
+
+          @if (errorMessage) {
+            <ion-text color="danger">
+              <p class="error-message ion-text-center">{{ errorMessage }}</p>
+            </ion-text>
+          }
+
+          <ion-button 
+            expand="block"
+            type="submit" 
+            class="signup-button"
+            [disabled]="isLoading || isLoadingBarangays"
+            shape="round"
+          >
+            @if (isLoading) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              SIGN UP
+            }
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Login Link -->
+    <div class="login-section">
+      <ion-text color="light">
+        <p class="login-text">Already have an account?</p>
+      </ion-text>
+      <ion-button 
+        fill="outline" 
+        color="light"
+        shape="round"
+        class="login-button" 
+        routerLink="/auth/login"
+      >
+        SIGN IN
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

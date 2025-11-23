@@ -1,0 +1,48 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="header-title">Announcement</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (announcement) {
+    <div class="content-container">
+      <!-- Category Badge -->
+      <div class="badge-row">
+        <div class="category-badge" [class.emergency-badge]="announcement.category === 'Emergency'">
+          @if (announcement.category === 'Emergency') {
+            <ion-icon name="warning" class="badge-icon"></ion-icon>
+          }
+          {{ announcement.category }}
+        </div>
+      </div>
+
+      <!-- Date Posted -->
+      <p class="date-posted">Posted {{ formatDate(announcement.datePosted) }}</p>
+
+      <!-- Title -->
+      <h1 class="announcement-title">{{ announcement.title }}</h1>
+
+      <!-- Announcement Details Section -->
+      <h3 class="section-heading">Announcement Details</h3>
+
+      <!-- Details Box -->
+      <div class="details-box">
+        <p class="announcement-description">{{ announcement.description }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (!announcement) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading announcement...</p>
+    </div>
+  }
+</ion-content>

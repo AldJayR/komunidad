@@ -1,0 +1,7 @@
+{
+  "name": "barangay-bulletin-board",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

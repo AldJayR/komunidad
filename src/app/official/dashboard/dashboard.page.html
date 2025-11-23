@@ -1,0 +1,126 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title class="header-title">
+      <div class="title-container">
+        <span class="app-name">Dashboard</span>
+        @if (userProfile) {
+          <span class="subtitle">Barangay Official</span>
+        }
+      </div>
+    </ion-title>
+    <ion-button slot="end" fill="clear" class="logout-btn" (click)="onLogout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-container">
+    <!-- Stats Header -->
+    @if (!isLoading && userProfile) {
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-number">{{ announcements.length }}</div>
+          <div class="stat-label">Total Posts</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getCategoryCount('Emergency') }}</div>
+          <div class="stat-label">Emergency</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getRecentCount() }}</div>
+          <div class="stat-label">This Week</div>
+        </div>
+      </div>
+    }
+
+    <!-- Section Header -->
+    @if (!isLoading) {
+      <div class="section-header">
+        <h2 class="section-title">My Announcements</h2>
+        <ion-button fill="clear" size="small" class="refresh-btn" (click)="onRefresh()">
+          <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading your announcements...</p>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && announcements.length === 0) {
+      <div class="empty-container">
+        <div class="empty-icon">
+          <ion-icon name="megaphone-outline"></ion-icon>
+        </div>
+        <h3 class="empty-title">No Announcements Yet</h3>
+        <p class="empty-subtitle">Start engaging with your community by creating your first announcement</p>
+        <ion-button 
+          class="create-first-btn"
+          expand="block"
+          (click)="onCreateNew()">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Create First Announcement
+        </ion-button>
+      </div>
+    }
+
+    <!-- Announcements List -->
+    @if (!isLoading && announcements.length > 0) {
+      <div class="announcements-list">
+        @for (announcement of announcements; track announcement.id) {
+          <div class="announcement-card">
+            <div class="card-header">
+              <div class="header-left">
+                <span 
+                  class="category-badge"
+                  [class.emergency]="announcement.category === 'Emergency'"
+                  [class.events]="announcement.category === 'Events'"
+                  [class.health]="announcement.category === 'Health'"
+                  [class.safety]="announcement.category === 'Safety'"
+                  [class.announcement]="announcement.category === 'Announcement'"
+                >
+                  @if (announcement.category === 'Emergency') {
+                    <ion-icon name="warning"></ion-icon>
+                  }
+                  {{ announcement.category }}
+                </span>
+                <span class="date-posted">{{ formatDate(announcement.datePosted) }}</span>
+              </div>
+            </div>
+            
+            <div class="card-content">
+              <h3 class="announcement-title">{{ announcement.title }}</h3>
+              <p class="announcement-description">{{ announcement.description }}</p>
+            </div>
+            
+            <div class="card-actions">
+              <ion-button fill="clear" size="small" class="action-btn edit-btn" (click)="onEdit(announcement)">
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Edit
+              </ion-button>
+              <ion-button fill="clear" size="small" class="action-btn delete-btn" (click)="onDelete(announcement)">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Delete
+              </ion-button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="onCreateNew()" class="custom-fab">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

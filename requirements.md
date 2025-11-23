@@ -1,0 +1,44 @@
+# Barangay Bulletin Board - MVP User Stories
+
+This document outlines the Minimum Viable Product (MVP) user stories for the "Barangay Bulletin Board" Ionic Angular mobile application, categorized by user role. Each user story includes functional requirements, non-functional requirements, needed UI components, and the corresponding Use Case label for a diagram.
+
+---
+
+## User Type: Resident
+
+| User Story | Functional Requirement | Non-Functional Requirement | Needed User Interface | Use Case (Diagram Label) |
+| :------------------------------------------------ | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- | :--------------------------------------------- |
+| As a resident, I want to **register with my email and password** so I can create an account. | The system must allow users to input an email and password. | User registration must be secure (password hashing). | Registration form (email input, password input, confirm password input, register button). | Register Account |
+| As a resident, I want to **log in with my email and password** so I can access the app. | The system must authenticate user credentials against Firebase Auth. | Login must be quick (under 2 seconds). | Login form (email input, password input, login button). | Log In |
+| As a resident, I want my **login session to persist** so I don't have to log in every time I open the app. | The system must store the user's authentication token locally. | Login persistence must be reliable across app restarts. | (No direct UI; automatic process in the background) | Persist Login Session |
+| As a resident, I want to **select my barangay** during or after registration so I only see relevant announcements. | The system must retrieve a list of available barangays from Firebase. | Barangay selection must be intuitive. | Dropdown/list picker for barangays; "Save" button. | Select Barangay |
+| As a resident, I want to **view a list of announcements** specific to my chosen barangay so I can stay informed. | The system must fetch announcements filtered by the user's selected barangay ID. | Announcement list must load quickly (under 3 seconds). | Announcement list screen (scrollable list of cards/items). | View Announcements List |
+| As a resident, I want to **see basic details for each announcement** (title, category, date posted) in the list so I can quickly scan them. | The system must display specified announcement attributes in the list view. | Information must be clearly legible. | Each list item displays title, category tag, date. | (Part of View Announcements List) |
+| As a resident, I want to **tap on an announcement** to view its full details (title, full description, category, date posted) so I can get complete information. | The system must navigate to a detailed view of the selected announcement. | Navigation to details must be smooth. | Announcement detail screen (title, description text, category, date). | View Announcement Details |
+| As a resident, I want to **see recently viewed announcements even when offline** so I can stay informed without an internet connection. | The system must cache loaded announcement data locally using Ionic Storage. | Offline viewing must be seamless when connectivity is lost. | Announcement list/detail screen (displays cached data). | View Cached Announcements |
+| As a resident, I want to **refresh the list of announcements** so I can see the latest updates. | The system must re-fetch the latest announcements from Firebase Firestore. | Refresh action must be responsive. | Pull-to-refresh gesture; refresh button. | Refresh Announcements |
+
+---
+
+## User Type: Barangay Official
+
+| User Story | Functional Requirement | Non-Functional Requirement | Needed User Interface | Use Case (Diagram Label) |
+| :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- | :---------------------------------------------- |
+| As a barangay official, I want to **register with my email and password** so I can create an account. | The system must allow officials to input an email and password. | User registration must be secure (password hashing). | Registration form (email input, password input, confirm password input, register button). | Register Account |
+| As a barangay official, I want to **log in with my email and password** so I can access the app. | The system must authenticate official credentials against Firebase Auth. | Login must be quick (under 2 seconds). | Login form (email input, password input, login button). | Log In |
+| As a barangay official, I want my **login session to persist** so I don't have to log in every time. | The system must store the official's authentication token locally. | Login persistence must be reliable across app restarts. | (No direct UI; automatic process in the background) | Persist Login Session |
+| As a barangay official, I want to **be linked to a specific barangay** upon registration so my posts are tied to my jurisdiction. | The system must associate the official's user account with a barangay ID in Firestore. | Barangay linkage must be accurate and non-editable by the official (for MVP). | Barangay selection (e.g., dropdown) or confirmation during official registration. | Link to Barangay |
+| As a barangay official, I want to **create a new announcement** by providing a title, description, and category so I can inform residents. | The system must capture announcement data and save it to Firebase Firestore. | Announcement creation must be straightforward. | "Create Announcement" form (title input, description textarea, category selector, publish button). | Create Announcement |
+| As a barangay official, I want to **view a list of my own posted announcements** so I can manage them. | The system must fetch announcements authored by the current official. | Management list must load efficiently. | "My Announcements" screen (scrollable list of cards/items). | View My Announcements |
+| As a barangay official, I want to **tap on one of my announcements to edit its details** (title, description, category) so I can correct or update information. | The system must retrieve the existing announcement data and allow updates to Firebase Firestore. | Editing process must be clear and prevent accidental data loss (e.g., save confirmation). | "Edit Announcement" form (pre-filled title input, description textarea, category selector, save/update button). | Edit Announcement |
+| As a barangay official, I want to **delete an announcement** so I can remove outdated or erroneous information. | The system must remove the selected announcement from Firebase Firestore. | Deletion must include a confirmation step to prevent accidental removal. | Delete button (on list item or detail view); confirmation dialog. | Delete Announcement |
+
+---
+
+## User Type: Shared / System Level
+
+| User Story | Functional Requirement | Non-Functional Requirement | Needed User Interface | Use Case (Diagram Label) |
+| :------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------- | :-------------------------------------------------------------------------- | :------------------------------------------------- | :------------------------------------------ |
+| As a user, I want to **see loading indicators** when data is being fetched so I know the app is working. | The system must display a visual indicator during data fetching operations. | Loading indicators must be unobtrusive. | Spinner or progress bar. | Display Loading Indicator |
+| As a user, I want to **receive clear error messages** if something goes wrong (e.g., login failed, no internet connection) so I understand what happened. | The system must display user-friendly error messages for common failures. | Error messages must be informative and actionable. | Toast message, alert dialog, or inline error text. | Display Error Message |
+| As a system, I want to **store a predefined list of barangays** so users can select from them. | The system must store a collection of barangay names and IDs in Firebase Firestore. | Barangay list must be consistent and easily maintainable. | (No direct UI for this; backend data structure) | Manage Barangay List (Admin Actor) |

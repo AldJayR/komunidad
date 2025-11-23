@@ -1,0 +1,94 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title class="header-title">Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        <ion-avatar class="profile-avatar">
+          <ion-icon name="person"></ion-icon>
+        </ion-avatar>
+      </div>
+      
+      @if (userProfile) {
+        <h2 class="user-name">{{ userProfile.email.split('@')[0] }}</h2>
+        <p class="user-role">{{ userProfile.role === 'resident' ? 'Resident' : 'Barangay Official' }}</p>
+      }
+    </div>
+
+    <!-- User Information Card -->
+    @if (userProfile) {
+      <div class="info-card">
+        <h3 class="section-title">Personal Information</h3>
+        
+        <div class="info-item">
+          <div class="info-icon">
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ userProfile.email }}</span>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Barangay</span>
+            <span class="info-value">{{ barangayName || 'Loading...' }}</span>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Account Type</span>
+            <span class="info-value">{{ userProfile.role === 'resident' ? 'Resident Account' : 'Official Account' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Actions Card -->
+      <div class="info-card">
+        <h3 class="section-title">Account</h3>
+        
+        <div class="action-item" (click)="showAccountInfo()">
+          <div class="action-icon">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+          <div class="action-content">
+            <span class="action-label">Account Information</span>
+            <span class="action-sublabel">View your account details</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <ion-button 
+        expand="block" 
+        color="danger" 
+        class="logout-button"
+        (click)="onLogout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Logout
+      </ion-button>
+    }
+
+    <!-- Loading State -->
+    @if (!userProfile) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading profile...</p>
+      </div>
+    }
+  </div>
+</ion-content>

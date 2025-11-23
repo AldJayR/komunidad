@@ -1,0 +1,234 @@
+.login-content {
+  --background: linear-gradient(135deg, #2c5790 0%, #3465A4 50%, #254a77 100%); // Blue background
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+// Brand Section
+.brand-section {
+  text-align: center;
+  margin-bottom: 40px;
+  
+  .logo-circle {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    --border-radius: 50%;
+    
+    ion-icon {
+      font-size: 40px;
+      color: #3b5998;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  .brand-title {
+    font-size: 2.5rem !important;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+    letter-spacing: 0.5px;
+    font-family: Poppins, sans-serif
+  }
+  
+  .brand-subtitle {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin: 0;
+    font-family: Inter, sans-serif;
+    color: #E8F0F8;
+  }
+}
+
+// Login Card
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  
+  ion-card-header {
+    padding-bottom: 10px;
+  }
+  
+  .welcome-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1A2D4A;
+    font-family: Inter, sans-serif
+  }
+  
+  .welcome-subtitle {
+    font-size: 14px;
+    color: #8BA9CC;
+    margin-top: 5px;
+    font-family: Inter, sans-serif;
+  }
+  
+  ion-card-content {
+    padding: 20px 25px 30px;
+  }
+  
+  form {
+    .input-wrapper {
+      margin-bottom: 20px;
+      
+      .input-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #254A77;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-family: Inter, sans-serif;
+      }
+      
+      ion-input {
+        --background: white;
+        --border-color: #ddd;
+        --border-radius: 8px;
+        --padding-start: 15px;
+        --padding-end: 15px;
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        --highlight-color-focused: #254A77;
+        font-size: 15px;
+        
+        &.ion-focused {
+          --border-color: #254A77;
+          --highlight-color-focused: #254A77;
+        }
+      }
+      
+      &.password-wrapper {
+        .input-with-icon {
+          position: relative;
+          
+          ion-input {
+            --padding-end: 50px;
+          }
+          
+          .password-toggle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            margin: 0;
+            --color: #666;
+            --padding-start: 8px;
+            --padding-end: 12px;
+            z-index: 10;
+            
+            ion-icon {
+              font-size: 20px;
+            }
+            
+            &:hover {
+              --color: #254A77;
+            }
+          }
+        }
+      }
+    }
+    
+    .forgot-password-link {
+      text-align: right;
+      margin-bottom: 25px;
+      margin-top: -10px;
+      
+      a {
+        font-size: 13px;
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    .error-message {
+      font-size: 13px;
+      margin: 15px 0;
+    }
+    
+    .signin-button {
+      margin-top: 10px;
+      --background: #3b5998;
+      --background-hover: #2d4373;
+      --background-activated: #2d4373;
+      --color: white;
+      --border-radius: 25px;
+      --padding-top: 14px;
+      --padding-bottom: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      
+      ion-spinner {
+        --color: white;
+      }
+    }
+  }
+}
+
+// Sign Up Section
+.signup-section {
+  text-align: center;
+  margin-top: 25px;
+  
+  .signup-text {
+    font-size: 14px;
+    margin: 0 0 15px 0;
+  }
+  
+  .signup-button {
+    --border-width: 2px;
+    --border-radius: 25px;
+    --padding-start: 40px;
+    --padding-end: 40px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .brand-section {
+    margin-bottom: 30px;
+    
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      
+      ion-icon {
+        font-size: 35px;
+      }
+    }
+    
+    .brand-title {
+      font-size: 28px;
+    }
+  }
+  
+  .login-card {
+    ion-card-content {
+      padding: 20px 20px 25px;
+    }
+  }
+}

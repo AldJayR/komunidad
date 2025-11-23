@@ -1,0 +1,144 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title class="header-title">
+      <div class="title-container">
+        <span class="app-name">Komunidad</span>
+        @if (barangayName) {
+          <span class="barangay-name">{{ barangayName }}</span>
+        }
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="content-container">
+    <!-- Search Bar -->
+    <div class="search-wrapper">
+      <ion-searchbar 
+        placeholder="Search announcements..."
+        [(ngModel)]="searchQuery"
+        (ionInput)="onSearchInput($event)"
+        (ionFocus)="searchFocused = true"
+        (ionBlur)="searchFocused = false"
+        [debounce]="300"
+        [class.focused]="searchFocused"
+        class="custom-searchbar"
+      ></ion-searchbar>
+    </div>
+
+    <!-- Category Filter Badges -->
+    <div class="filter-badges-wrapper">
+      <div class="filter-badges">
+      <ion-chip 
+        [class.selected]="selectedCategory === 'All'"
+        (click)="selectCategory('All')"
+        class="filter-chip"
+      >
+        <ion-label>All</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Emergency'"
+        (click)="selectCategory('Emergency')"
+        class="filter-chip"
+      >
+        <ion-label>Emergency</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Events'"
+        (click)="selectCategory('Events')"
+        class="filter-chip"
+      >
+        <ion-label>Events</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Health'"
+        (click)="selectCategory('Health')"
+        class="filter-chip"
+      >
+        <ion-label>Health</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Safety'"
+        (click)="selectCategory('Safety')"
+        class="filter-chip"
+      >
+        <ion-label>Safety</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Announcement'"
+        (click)="selectCategory('Announcement')"
+        class="filter-chip"
+      >
+        <ion-label>Announcement</ion-label>
+      </ion-chip>
+      </div>
+      <div class="scroll-indicator"></div>
+    </div>
+
+    <!-- Result Count -->
+    @if (!isLoading) {
+      <div class="result-count">
+        @if (filteredAnnouncements.length > 0) {
+          <p>Showing {{ filteredAnnouncements.length }} announcement{{ filteredAnnouncements.length === 1 ? '' : 's' }}</p>
+        } @else if (searchQuery || selectedCategory !== 'All') {
+          <p class="no-results">No results found. Try adjusting your filters.</p>
+        }
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading announcements...</p>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && filteredAnnouncements.length === 0) {
+      <div class="empty-container">
+        <p>No announcements available</p>
+        <ion-button (click)="loadAnnouncements()" fill="outline">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Refresh
+        </ion-button>
+      </div>
+    }
+
+    <!-- Announcements List -->
+    @if (!isLoading && filteredAnnouncements.length > 0) {
+      <div class="announcements-list">
+        @for (announcement of filteredAnnouncements; track announcement.id) {
+          <ion-card 
+            (click)="viewDetails(announcement)"
+            button="true"
+            class="announcement-card">
+            <ion-card-header>
+              <div class="card-top-row">
+                <ion-badge 
+                  [class.emergency-badge]="announcement.category === 'Emergency'"
+                  class="category-badge">
+                  @if (announcement.category === 'Emergency') {
+                    <ion-icon name="warning" class="badge-icon"></ion-icon>
+                  }
+                  {{ announcement.category }}
+                </ion-badge>
+                <span class="relative-date">{{ getRelativeDate(announcement.datePosted) }}</span>
+              </div>
+              <ion-card-title>{{ announcement.title }}</ion-card-title>
+              <p class="description-preview">{{ announcement.description }}</p>
+              <div class="card-footer">
+                <span class="read-more">Tap to read more →</span>
+              </div>
+            </ion-card-header>
+          </ion-card>
+        }
+      </div>
+    }
+  </div>
+</ion-content>

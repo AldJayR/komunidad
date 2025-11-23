@@ -1,0 +1,159 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title class="header-title">Advanced Search</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-container">
+    <!-- Search Input -->
+    <div class="search-wrapper">
+      <ion-searchbar 
+        class="custom-searchbar"
+        [class.focused]="searchFocused"
+        placeholder="Search announcements..."
+        (ionFocus)="searchFocused = true"
+        (ionBlur)="searchFocused = false"
+        (ionInput)="onSearchInput($event)"
+        [debounce]="300">
+      </ion-searchbar>
+    </div>
+
+    <!-- Advanced Filters Section -->
+    <div class="filters-section">
+      <div class="section-header">
+        <ion-icon name="options-outline" class="section-icon"></ion-icon>
+        <h3 class="section-title">Filters</h3>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          class="clear-button"
+          (click)="clearAllFilters()">
+          Clear All
+        </ion-button>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <ion-label class="filter-label">Category</ion-label>
+        <div class="filter-badges">
+          @for (category of categories; track category) {
+            <ion-chip 
+              [class.selected]="selectedCategory === category"
+              (click)="selectCategory(category)">
+              <ion-label>{{ category }}</ion-label>
+            </ion-chip>
+          }
+        </div>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-group">
+        <ion-label class="filter-label">Date Range</ion-label>
+        <div class="filter-badges">
+          @for (range of dateRanges; track range.value) {
+            <ion-chip 
+              [class.selected]="selectedDateRange === range.value"
+              (click)="selectDateRange(range.value)">
+              <ion-label>{{ range.label }}</ion-label>
+            </ion-chip>
+          }
+        </div>
+      </div>
+
+      <!-- Barangay Filter (for cross-barangay search) -->
+      <div class="filter-group">
+        <ion-label class="filter-label">Barangay</ion-label>
+        <ion-select 
+          class="custom-select"
+          [(ngModel)]="selectedBarangay"
+          placeholder="All Barangays"
+          (ionChange)="applyFilters()">
+          <ion-select-option value="all">All Barangays</ion-select-option>
+          @for (barangay of barangays; track barangay.id) {
+            <ion-select-option [value]="barangay.id">{{ barangay.name }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="filter-group">
+        <ion-label class="filter-label">Sort By</ion-label>
+        <div class="filter-badges">
+          @for (sort of sortOptions; track sort.value) {
+            <ion-chip 
+              [class.selected]="selectedSort === sort.value"
+              (click)="selectSort(sort.value)">
+              <ion-icon [name]="sort.icon" class="chip-icon"></ion-icon>
+              <ion-label>{{ sort.label }}</ion-label>
+            </ion-chip>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+      <div class="result-count">
+        @if (filteredAnnouncements.length > 0) {
+          <span class="count-text">Found {{ filteredAnnouncements.length }} announcement{{ filteredAnnouncements.length !== 1 ? 's' : '' }}</span>
+        } @else if (isSearchActive()) {
+          <span class="count-text no-results">No announcements found</span>
+        } @else {
+          <span class="count-text hint">Use filters above to search announcements</span>
+        }
+      </div>
+
+      <!-- Loading State -->
+      @if (loading) {
+        <div class="loading-container">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Searching announcements...</p>
+        </div>
+      }
+
+      <!-- Results List -->
+      @else if (filteredAnnouncements.length > 0) {
+        <div class="announcements-list">
+          @for (announcement of filteredAnnouncements; track announcement.id) {
+            <ion-card class="announcement-card" (click)="viewAnnouncement(announcement)">
+              <ion-card-content>
+                <div class="card-top-row">
+                  <div class="category-badge" [class.emergency-badge]="announcement.category === 'Emergency'">
+                    @if (announcement.category === 'Emergency') {
+                      <ion-icon name="warning" class="badge-icon"></ion-icon>
+                    }
+                    {{ announcement.category }}
+                  </div>
+                  <span class="relative-date">{{ getRelativeDate(announcement.datePosted) }}</span>
+                </div>
+                
+                <ion-card-title>{{ announcement.title }}</ion-card-title>
+                <p class="description-preview">{{ announcement.description }}</p>
+                
+                <!-- Barangay Tag -->
+                <div class="card-meta">
+                  <ion-icon name="location-outline" class="meta-icon"></ion-icon>
+                  <span class="meta-text">{{ getBarangayName(announcement.barangayId) }}</span>
+                </div>
+                
+                <div class="card-footer">
+                  <span class="read-more">Tap to read more →</span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @else if (isSearchActive()) {
+        <div class="empty-container">
+          <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+          <p>No announcements match your search criteria</p>
+          <p class="empty-hint">Try adjusting your filters</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>
