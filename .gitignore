@@ -65,6 +65,26 @@ yarn-error.log
 testem.log
 /typings
 
+# Environment files
+.env
+.env.local
+.env.production
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
 # System files
 .DS_Store
 Thumbs.db
+
+# Documentation files (project management)
+MVP-FULFILLMENT.md
+OFFICIAL_UI_REDESIGN.md
+RESIDENT_FEATURES_CHECKLIST.md
+CODE_IMPROVEMENTS_REPORT.md
+FIRESTORE_RULES_SETUP.md
+tasks.md
+requirements.md

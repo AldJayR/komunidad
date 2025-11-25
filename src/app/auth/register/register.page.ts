@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -18,14 +18,14 @@ import {
   IonSelectOption,
   IonRadioGroup,
   IonRadio,
-  IonAvatar,
-  IonIcon,
-  ToastController
+  IonIcon
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { newspaperOutline, eyeOutline, eyeOffOutline, arrowBackOutline } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Auth } from '../../services/auth';
 import { Barangay, BarangayData } from '../../services/barangay';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -48,7 +48,6 @@ import { Barangay, BarangayData } from '../../services/barangay';
     IonSelectOption,
     IonRadioGroup,
     IonRadio,
-    IonAvatar,
     IonIcon,
     CommonModule,
     FormsModule,
@@ -59,7 +58,8 @@ export class RegisterPage implements OnInit {
   private authService = inject(Auth);
   private barangayService = inject(Barangay);
   private router = inject(Router);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   email = '';
   password = '';
@@ -91,15 +91,15 @@ export class RegisterPage implements OnInit {
   }
 
   private loadBarangays() {
-    this.barangayService.getBarangays().subscribe({
+    this.barangayService.getBarangays().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (barangays) => {
-        console.log('Barangays loaded:', barangays);
         this.barangays = barangays;
         this.isLoadingBarangays = false;
       },
       error: async (error) => {
-        console.error('Error loading barangays:', error);
-        await this.showToast('Failed to load barangays', 'danger');
+        await this.toastService.error('Failed to load barangays');
         this.isLoadingBarangays = false;
       }
     });
@@ -108,17 +108,17 @@ export class RegisterPage implements OnInit {
   async onRegister() {
     // Validation
     if (!this.email || !this.password || !this.confirmPassword || !this.barangayId) {
-      await this.showToast('Please fill in all fields', 'warning');
+      await this.toastService.warning('Please fill in all fields');
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      await this.showToast('Passwords do not match', 'warning');
+      await this.toastService.warning('Passwords do not match');
       return;
     }
 
     if (this.password.length < 6) {
-      await this.showToast('Password must be at least 6 characters', 'warning');
+      await this.toastService.warning('Password must be at least 6 characters');
       return;
     }
 
@@ -126,12 +126,12 @@ export class RegisterPage implements OnInit {
 
     this.authService.register(this.email, this.password, this.role, this.barangayId).subscribe({
       next: async () => {
-        await this.showToast('Registration successful!', 'success');
-        // Navigate based on role
+        await this.toastService.success('Registration successful!');
+        // Navigate based on role and clear history
         if (this.role === 'official') {
-          this.router.navigate(['/official-dashboard']);
+          this.router.navigate(['/official-dashboard'], { replaceUrl: true });
         } else {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'], { replaceUrl: true });
         }
         this.isLoading = false;
       },
@@ -144,19 +144,9 @@ export class RegisterPage implements OnInit {
         } else if (error.code === 'auth/weak-password') {
           message = 'Password is too weak';
         }
-        await this.showToast(message, 'danger');
+        await this.toastService.error(message);
         this.isLoading = false;
       }
     });
-  }
-
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    await toast.present();
   }
 }

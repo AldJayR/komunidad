@@ -4,27 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { 
   IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
   IonCard,
   IonCardHeader,
   IonCardTitle,
   IonCardSubtitle,
   IonCardContent,
-  IonItem,
   IonLabel,
   IonInput,
   IonButton,
   IonText,
   IonSpinner,
-  IonAvatar,
-  IonIcon,
-  ToastController
+  IonIcon
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { newspaperOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { Auth } from '../../services/auth';
+import { ToastService } from '../../services/toast.service';
 import { switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -35,21 +30,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [
     IonContent, 
-    IonHeader, 
-    IonTitle, 
-    IonToolbar, 
     IonCard,
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
-    IonItem,
     IonLabel,
     IonInput,
     IonButton,
     IonText,
     IonSpinner,
-    IonAvatar,
     IonIcon,
     CommonModule, 
     FormsModule,
@@ -59,7 +49,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class LoginPage {
   private authService = inject(Auth);
   private router = inject(Router);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
   email = '';
@@ -79,7 +69,7 @@ export class LoginPage {
 
   async onLogin() {
     if (!this.email || !this.password) {
-      await this.showToast('Please fill in all fields', 'warning');
+      await this.toastService.warning('Please fill in all fields');
       return;
     }
 
@@ -90,12 +80,12 @@ export class LoginPage {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: async (profile) => {
-        await this.showToast('Login successful!', 'success');
-        // Navigate based on role
+        await this.toastService.success('Login successful!');
+        // Navigate based on role and clear history
         if (profile?.role === 'official') {
-          this.router.navigate(['/official-dashboard']);
+          this.router.navigate(['/official-dashboard'], { replaceUrl: true });
         } else {
-          this.router.navigate(['/tabs/home']);
+          this.router.navigate(['/tabs/home'], { replaceUrl: true });
         }
         this.isLoading = false;
       },
@@ -110,19 +100,9 @@ export class LoginPage {
         } else if (error.message.includes('profile')) { // Generic error for profile issues
           message = 'Error loading user profile.';
         }
-        await this.showToast(message, 'danger');
+        await this.toastService.error(message);
         this.isLoading = false;
       }
     });
-  }
-
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    await toast.present();
   }
 }

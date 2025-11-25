@@ -1,4 +1,4 @@
-<ion-header [translucent]="true" class="custom-header">
+<ion-header class="custom-header">
   <ion-toolbar>
     <ion-title class="header-title">
       <div class="title-container">
@@ -11,7 +11,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -42,6 +42,20 @@
         <ion-label>All</ion-label>
       </ion-chip>
       <ion-chip 
+        [class.selected]="selectedCategory === 'General'"
+        (click)="selectCategory('General')"
+        class="filter-chip"
+      >
+        <ion-label>General</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Event'"
+        (click)="selectCategory('Event')"
+        class="filter-chip"
+      >
+        <ion-label>Event</ion-label>
+      </ion-chip>
+      <ion-chip 
         [class.selected]="selectedCategory === 'Emergency'"
         (click)="selectCategory('Emergency')"
         class="filter-chip"
@@ -49,11 +63,11 @@
         <ion-label>Emergency</ion-label>
       </ion-chip>
       <ion-chip 
-        [class.selected]="selectedCategory === 'Events'"
-        (click)="selectCategory('Events')"
+        [class.selected]="selectedCategory === 'Community Service'"
+        (click)="selectCategory('Community Service')"
         class="filter-chip"
       >
-        <ion-label>Events</ion-label>
+        <ion-label>Community Service</ion-label>
       </ion-chip>
       <ion-chip 
         [class.selected]="selectedCategory === 'Health'"
@@ -63,18 +77,25 @@
         <ion-label>Health</ion-label>
       </ion-chip>
       <ion-chip 
+        [class.selected]="selectedCategory === 'Education'"
+        (click)="selectCategory('Education')"
+        class="filter-chip"
+      >
+        <ion-label>Education</ion-label>
+      </ion-chip>
+      <ion-chip 
+        [class.selected]="selectedCategory === 'Infrastructure'"
+        (click)="selectCategory('Infrastructure')"
+        class="filter-chip"
+      >
+        <ion-label>Infrastructure</ion-label>
+      </ion-chip>
+      <ion-chip 
         [class.selected]="selectedCategory === 'Safety'"
         (click)="selectCategory('Safety')"
         class="filter-chip"
       >
         <ion-label>Safety</ion-label>
-      </ion-chip>
-      <ion-chip 
-        [class.selected]="selectedCategory === 'Announcement'"
-        (click)="selectCategory('Announcement')"
-        class="filter-chip"
-      >
-        <ion-label>Announcement</ion-label>
       </ion-chip>
       </div>
       <div class="scroll-indicator"></div>

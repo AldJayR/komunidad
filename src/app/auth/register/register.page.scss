@@ -37,20 +37,43 @@
   text-align: center;
   margin-bottom: 40px;
   
-  .logo-circle {
-    width: 80px;
-    height: 80px;
+  .logo-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
     margin: 0 auto 20px;
-    --border-radius: 50%;
     
-    ion-icon {
-      font-size: 40px;
-      color: #3b5998;
+    // Outer semi-transparent ring
+    &::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 0;
+    }
+  }
+  
+  .logo-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    padding: 20px;
+    
+    img {
       width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      object-fit: contain;
     }
   }
   

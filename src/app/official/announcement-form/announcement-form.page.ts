@@ -9,20 +9,13 @@ import {
   IonToolbar,
   IonButtons,
   IonBackButton,
-  IonCard,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonTextarea,
   IonSelect,
   IonSelectOption,
-  IonButton,
-  IonSpinner,
-  ToastController
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { Auth, UserProfile } from '../../services/auth';
 import { Announcement, AnnouncementData } from '../../services/announcement';
+import { ToastService } from '../../services/toast.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap, filter, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -41,15 +34,8 @@ import { of } from 'rxjs';
     IonToolbar,
     IonButtons,
     IonBackButton,
-    IonCard,
-    IonCardContent,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonTextarea,
     IonSelect,
     IonSelectOption,
-    IonButton,
     IonSpinner
   ]
 })
@@ -58,7 +44,7 @@ export class AnnouncementFormPage implements OnInit {
   private announcementService = inject(Announcement);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
   announcementId: string | null = null;
@@ -67,6 +53,7 @@ export class AnnouncementFormPage implements OnInit {
   category = 'General';
   isLoading = false;
   isEditMode = false;
+  userProfile: UserProfile | null = null;
 
   categories = [
     'General',
@@ -80,6 +67,15 @@ export class AnnouncementFormPage implements OnInit {
   ];
 
   ngOnInit() {
+    // Load user profile once
+    this.authService.userProfile$.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      filter((profile): profile is UserProfile => !!profile)
+    ).subscribe(profile => {
+      this.userProfile = profile;
+    });
+
+    // Load announcement if editing
     this.route.queryParams.pipe(
       takeUntilDestroyed(this.destroyRef),
       tap(params => {
@@ -99,7 +95,7 @@ export class AnnouncementFormPage implements OnInit {
         this.isLoading = false;
       },
       error: async () => {
-        await this.showToast('Failed to load announcement', 'danger');
+        await this.toastService.error('Failed to load announcement');
         this.isLoading = false;
       }
     });
@@ -107,59 +103,53 @@ export class AnnouncementFormPage implements OnInit {
 
   async onSubmit() {
     if (!this.title || !this.description || !this.category) {
-      await this.showToast('Please fill in all fields', 'warning');
+      await this.toastService.warning('Please fill in all fields');
+      return;
+    }
+
+    if (!this.userProfile) {
+      await this.toastService.error('User profile not loaded');
       return;
     }
 
     this.isLoading = true;
 
-    this.authService.userProfile$.pipe(
-      takeUntilDestroyed(this.destroyRef),
-      filter((profile): profile is UserProfile => !!profile),
-      switchMap(profile => {
-        if (this.isEditMode && this.announcementId) {
-          // Update
-          return this.announcementService.updateAnnouncement(this.announcementId, {
-            title: this.title,
-            description: this.description,
-            category: this.category
-          }).pipe(
-            tap(() => this.showToast('Announcement updated', 'success'))
-          );
-        } else {
-          // Create
-          const newAnnouncement = {
-            title: this.title,
-            description: this.description,
-            category: this.category,
-            barangayId: profile.barangayId,
-            authorId: profile.uid
-          };
-          return this.announcementService.createAnnouncement(newAnnouncement).pipe(
-            tap(() => this.showToast('Announcement created', 'success'))
-          );
+    if (this.isEditMode && this.announcementId) {
+      // Update existing announcement
+      this.announcementService.updateAnnouncement(this.announcementId, {
+        title: this.title,
+        description: this.description,
+        category: this.category
+      }).subscribe({
+        next: async () => {
+          await this.toastService.success('Announcement updated');
+          this.router.navigate(['/official-dashboard']);
+          this.isLoading = false;
+        },
+        error: async () => {
+          await this.toastService.error('Failed to update announcement');
+          this.isLoading = false;
         }
-      })
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/official-dashboard']);
-        this.isLoading = false;
-      },
-      error: async (error) => {
-        const action = this.isEditMode ? 'update' : 'create';
-        await this.showToast(`Failed to ${action} announcement`, 'danger');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    await toast.present();
+      });
+    } else {
+      // Create new announcement
+      this.announcementService.createAnnouncement({
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        barangayId: this.userProfile.barangayId,
+        authorId: this.userProfile.uid
+      }).subscribe({
+        next: async () => {
+          await this.toastService.success('Announcement created');
+          this.router.navigate(['/official-dashboard']);
+          this.isLoading = false;
+        },
+        error: async () => {
+          await this.toastService.error('Failed to create announcement');
+          this.isLoading = false;
+        }
+      });
+    }
   }
 }

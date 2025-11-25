@@ -57,8 +57,17 @@ export class AnnouncementDetailPage implements OnInit {
   loadAnnouncement(id: string) {
     this.announcementService.getAnnouncementById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(announcement => {
-        this.announcement = announcement;
+      .subscribe({
+        next: (announcement) => {
+          this.announcement = announcement;
+          if (!announcement) {
+            console.error('Announcement not found');
+          }
+        },
+        error: (error) => {
+          console.error('Error loading announcement:', error);
+          this.announcement = null;
+        }
       });
   }
 

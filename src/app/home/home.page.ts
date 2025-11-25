@@ -19,7 +19,6 @@ import {
   IonSearchbar,
   IonChip,
   IonLabel,
-  ToastController,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -27,9 +26,10 @@ import { logOutOutline, refreshOutline, warning } from 'ionicons/icons';
 import { Auth, UserProfile } from '../services/auth';
 import { Announcement, AnnouncementData } from '../services/announcement';
 import { Barangay, BarangayData } from '../services/barangay';
+import { ToastService } from '../services/toast.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -62,7 +62,7 @@ export class HomePage implements OnInit {
   private announcementService = inject(Announcement);
   private barangayService = inject(Barangay);
   private router = inject(Router);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
   private destroyRef = inject(DestroyRef);
 
@@ -114,7 +114,7 @@ export class HomePage implements OnInit {
         this.isLoading = false;
       },
       error: async (error) => {
-        await this.showToast('Failed to load announcements', 'danger');
+        await this.toastService.error('Failed to load announcements');
         this.isLoading = false;
       }
     });
@@ -136,7 +136,7 @@ export class HomePage implements OnInit {
 
   loadAnnouncements(): Observable<AnnouncementData[]> {
     if (!this.userProfile?.barangayId) {
-      return new Observable(subscriber => subscriber.next([]));
+      return of([]);
     }
     return this.announcementService.getAnnouncements(this.userProfile.barangayId);
   }
@@ -268,15 +268,5 @@ export class HomePage implements OnInit {
       ]
     });
     await alert.present();
-  }
-
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    await toast.present();
   }
 }

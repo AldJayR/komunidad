@@ -9,24 +9,18 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonBadge,
   IonButton,
   IonSpinner,
-  ToastController,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addOutline, createOutline, trashOutline, logOutOutline, refreshOutline, warning, megaphoneOutline } from 'ionicons/icons';
 import { Auth, UserProfile } from '../../services/auth';
 import { Announcement, AnnouncementData } from '../../services/announcement';
+import { ToastService } from '../../services/toast.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,12 +36,6 @@ import { Observable } from 'rxjs';
     IonFab,
     IonFabButton,
     IonIcon,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
-    IonBadge,
     IonButton,
     IonSpinner
   ]
@@ -56,7 +44,7 @@ export class DashboardPage implements OnInit {
   private authService = inject(Auth);
   private announcementService = inject(Announcement);
   private router = inject(Router);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
   private destroyRef = inject(DestroyRef);
 
@@ -93,7 +81,7 @@ export class DashboardPage implements OnInit {
         this.isLoading = false;
       },
       error: async (error) => {
-        await this.showToast('Failed to load announcements', 'danger');
+        await this.toastService.error('Failed to load announcements');
         this.isLoading = false;
       }
     });
@@ -101,7 +89,7 @@ export class DashboardPage implements OnInit {
 
   loadAnnouncements(): Observable<AnnouncementData[]> {
     if (!this.userProfile) {
-      return new Observable(subscriber => subscriber.next([]));
+      return of([]);
     }
     return this.announcementService.getMyAnnouncements(this.userProfile.uid);
   }
@@ -134,12 +122,12 @@ export class DashboardPage implements OnInit {
                 takeUntilDestroyed(this.destroyRef)
               ).subscribe({
                 next: async () => {
-                  await this.showToast('Announcement deleted', 'success');
+                  await this.toastService.success('Announcement deleted');
                   // Optimistically remove the announcement from the array
                   this.announcements = this.announcements.filter(a => a.id !== announcement.id);
                 },
                 error: async () => {
-                  await this.showToast('Failed to delete announcement', 'danger');
+                  await this.toastService.error('Failed to delete announcement');
                 }
               });
             }
@@ -176,11 +164,11 @@ export class DashboardPage implements OnInit {
       next: (announcements) => {
         this.announcements = announcements;
         this.isLoading = false;
-        this.showToast('Announcements refreshed', 'success');
+        this.toastService.success('Announcements refreshed');
       },
       error: () => {
         this.isLoading = false;
-        this.showToast('Failed to refresh', 'danger');
+        this.toastService.error('Failed to refresh');
       }
     });
   }
@@ -207,15 +195,5 @@ export class DashboardPage implements OnInit {
       ]
     });
     await alert.present();
-  }
-
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    await toast.present();
   }
 }

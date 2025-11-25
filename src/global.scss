@@ -60,3 +60,13 @@
     color: #3465A4;
   }
 }
+
+// Safe Area Support for Status Bar
+ion-content {
+  --padding-top: env(safe-area-inset-top);
+  --padding-bottom: env(safe-area-inset-bottom);
+}
+
+ion-header {
+  padding-top: env(safe-area-inset-top);
+}

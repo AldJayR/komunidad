@@ -68,7 +68,10 @@ export class Announcement {
         return from(getDocs(q)).pipe(
           map(snapshot => this.mapDocsToAnnouncements(snapshot.docs)),
           tap(announcements => this.cacheAnnouncements(announcements)),
-          catchError(() => this.getCachedAnnouncements())
+          catchError(error => {
+            console.error('Error fetching announcements, falling back to cache:', error);
+            return this.getCachedAnnouncements();
+          })
         );
       });
     });

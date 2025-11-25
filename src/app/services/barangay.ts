@@ -8,7 +8,7 @@ import {
   query,
   orderBy
 } from '@angular/fire/firestore';
-import { Observable, from, map, defer } from 'rxjs';
+import { Observable, from, map, defer, tap, catchError, of } from 'rxjs';
 
 export interface BarangayData {
   id: string;
@@ -23,11 +23,17 @@ export class Barangay {
   private injector = inject(Injector);
   private readonly collectionName = 'barangays';
   private readonly documentId = 'barangay_names';
+  private cachedBarangays: BarangayData[] | null = null;
 
   /**
-   * Get all barangays from the names array
+   * Get all barangays from Firestore with caching
    */
   getBarangays(): Observable<BarangayData[]> {
+    // Return cached data if available
+    if (this.cachedBarangays) {
+      return of(this.cachedBarangays);
+    }
+
     return defer(() => 
       runInInjectionContext(this.injector, () => {
         const collectionRef = collection(this.firestore, this.collectionName);
@@ -43,9 +49,33 @@ export class Barangay {
               id: doc.id,
               name: doc.data()['name']
             }));
+          }),
+          tap(barangays => {
+            // Cache the results
+            this.cachedBarangays = barangays;
+          }),
+          catchError(error => {
+            console.error('Error fetching barangays:', error);
+            return of([]);
           })
         );
       })
+    );
+  }
+
+  /**
+   * Clear the cache (useful for testing or force refresh)
+   */
+  clearCache(): void {
+    this.cachedBarangays = null;
+  }
+
+  /**
+   * Get a single barangay by ID from cache
+   */
+  getBarangayById(id: string): Observable<BarangayData | null> {
+    return this.getBarangays().pipe(
+      map(barangays => barangays.find(b => b.id === id) || null)
     );
   }
 }

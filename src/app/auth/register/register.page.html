@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="register-content">
+<ion-content class="register-content">
   <!-- Back Button -->
   <ion-button 
     fill="clear" 
@@ -11,9 +11,11 @@
   <div class="register-container">
     <!-- Logo and Brand -->
     <div class="brand-section">
-      <ion-avatar class="logo-circle">
-        <ion-icon name="newspaper-outline"></ion-icon>
-      </ion-avatar>
+      <div class="logo-wrapper">
+        <div class="logo-circle">
+          <img src="assets/icon/icon.png" alt="Komunidad Logo" />
+        </div>
+      </div>
       <ion-text>
         <h1 class="brand-title">Komunidad</h1>
       </ion-text>
@@ -107,7 +109,7 @@
               placeholder="Select your barangay"
               [disabled]="isLoading || isLoadingBarangays"
               class="custom-select"
-              interface="popover"
+              interface="action-sheet"
             >
               @if (isLoadingBarangays) {
                 <ion-select-option value="">Loading barangays...</ion-select-option>
