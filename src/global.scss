@@ -68,5 +68,15 @@ ion-content {
 }
 
 ion-header {
+  padding-top: env(safe-area-inset-top) !important;
+}
+
+ion-toolbar {
+  padding-top: env(safe-area-inset-top);
+  --padding-top: env(safe-area-inset-top);
+}
+
+// Prevent content from going under status bar
+.ion-page {
   padding-top: env(safe-area-inset-top);
 }
